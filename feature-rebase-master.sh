@@ -21,7 +21,7 @@ git checkout $FEATURE_BRANCH
 
 # 2️⃣ 强制剥离 dev 基线，仅保留当前特性
 echo "🔪 剥离 dev 基线，回归 master"
-git rebase --onto origin/$MASTER_BRANCH origin/$DEV_BRANCH
+git rebase --onto origin/$MASTER_BRANCH origin/$DEV_BRANCH $FEATURE_BRANCH
 
 # 3️⃣ 切到 master 并保持最新
 git checkout $MASTER_BRANCH

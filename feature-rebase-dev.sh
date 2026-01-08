@@ -2,7 +2,7 @@
 set -e
 
 FEATURE_BRANCH=$1
-DEV_BRANCH=dev
+DEV_BRANCH=main
 
 if [ -z "$FEATURE_BRANCH" ]; then
   echo "❌ 请指定特性分支名"

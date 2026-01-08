@@ -1,30 +1,33 @@
-#!/bin/bash
-# 用法：./feature-rebase-master.sh feat-xxx
-
+#!/usr/bin/env bash
 set -e
 
-FEATURE=$1
-DEV=dev
-MASTER=master
+FEATURE_BRANCH=$1
+MASTER_BRANCH=master
+DEV_BRANCH=dev
 
-if [ -z "$FEATURE" ]; then
-  echo "❌ 请传入特性分支名"
+if [ -z "$FEATURE_BRANCH" ]; then
+  echo "❌ 请指定特性分支名"
+  echo "👉 用法: ./feature-release-to-master.sh feat-x"
   exit 1
 fi
 
-echo "▶ 切换到特性分支：$FEATURE"
-git checkout "$FEATURE"
+echo "🚀 发布特性 [$FEATURE_BRANCH] → [$MASTER_BRANCH]"
+echo "🧼 将使用 rebase --onto 保留仅当前特性提交"
 
-echo "▶ 同步远程"
 git fetch origin
 
-echo "▶ 计算 fork-point（$FEATURE ← $DEV）"
-FORK_POINT=$(git merge-base "$FEATURE" "origin/$DEV")
+# 1️⃣ 切到特性分支
+git checkout $FEATURE_BRANCH
 
-echo "▶ 基于 master 重放特性提交"
-git rebase --onto "origin/$MASTER" "$FORK_POINT" "$FEATURE"
+# 2️⃣ 强制剥离 dev 基线，仅保留当前特性
+echo "🔪 剥离 dev 基线，回归 master"
+git rebase --onto origin/$MASTER_BRANCH origin/$DEV_BRANCH
 
-echo "▶ 校验：只应看到 $FEATURE 的提交"
-git log --oneline "origin/$MASTER..$FEATURE"
+# 3️⃣ 切到 master 并保持最新
+git checkout $MASTER_BRANCH
+git pull origin $MASTER_BRANCH
 
-echo "✅ 特性分支已安全回归 master 基线"
+# 4️⃣ 合并特性分支
+git merge $FEATURE_BRANCH
+
+echo "🎉 发布完成：$FEATURE_BRANCH 已合并到 $MASTER_BRANCH"

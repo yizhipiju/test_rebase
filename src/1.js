@@ -8,3 +8,6 @@ let g = 7;
 let h = 8;
 let i = 9;
 let j = 10;
+let k = 11;
+let l = 12;
+let m = 13;
